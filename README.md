@@ -372,4 +372,299 @@ storeData("user", { name: "John" });
 - Heap is **larger**, **flexible**, and **requires garbage collection**.
 - Understanding **stack vs. heap** helps optimize memory usage, avoid performance issues, and prevent memory leaks.
 
-Would you like **examples of memory optimization** for real-world apps? 🚀😊
+Yes, in Object-Oriented Programming (OOP) in Java, the **type of reference variable** determines **which members (methods and fields) can be accessed**, **not the actual object type** that was instantiated.  
+
+### **Key Concept: Reference Type vs. Object Type**  
+In Java, when you create an object, it has:  
+1. **Reference Type** → The declared type of the variable (compile-time type).  
+2. **Object Type** → The actual type of the object created at runtime.  
+
+The reference type controls **which members are accessible** at **compile time**. The actual object type determines **which methods are executed** at **runtime (due to method overriding and polymorphism).**  
+
+---
+
+### **Example 1: Reference Type Controls Member Access**
+```java
+class Parent {
+    void show() {
+        System.out.println("Parent show()");
+    }
+}
+
+class Child extends Parent {
+    void display() {
+        System.out.println("Child display()");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Parent obj = new Child(); // Reference type: Parent, Object type: Child
+        obj.show();   // ✅ Allowed (because 'show()' exists in Parent)
+        // obj.display(); // ❌ Compile-time error (because Parent doesn't have 'display()')
+    }
+}
+```
+- Here, `obj` is declared as `Parent`, so only members of `Parent` can be accessed.
+- Even though the actual object is `Child`, we **cannot** access `display()` because it's not in `Parent`.
+
+---
+
+### **Example 2: Runtime Method Execution (Method Overriding)**
+```java
+class Parent {
+    void show() {
+        System.out.println("Parent show()");
+    }
+}
+
+class Child extends Parent {
+    @Override
+    void show() {
+        System.out.println("Child show()");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Parent obj = new Child(); // Reference type: Parent, Object type: Child
+        obj.show();  // Outputs: "Child show()" (Method overriding applies)
+    }
+}
+```
+- Even though `obj` is of type `Parent`, the `show()` method of `Child` is executed due to **runtime polymorphism** (dynamic method dispatch).
+
+---
+
+### **Key Takeaways**
+1. **The reference type determines what members (fields/methods) can be accessed.**
+2. **Method calls are resolved at runtime (dynamic method dispatch) if overridden.**
+3. **Fields are resolved based on the reference type, not the actual object type.**
+4. **To access subclass-specific members, explicit type casting is required.**
+   ```java
+   ((Child) obj).display(); // ✅ Allowed after type casting
+   ```
+
+In Java, **multiple inheritance using classes is not allowed** to avoid the **"Diamond Problem."**  
+
+### **Scenario: Two Parent Classes with Same Variable**
+If Java allowed multiple inheritance like this:
+```java
+class Parent1 {
+    int value = 10;
+}
+
+class Parent2 {
+    int value = 20;
+}
+
+// ❌ Java does NOT allow this!
+class Child extends Parent1, Parent2 {
+    void printValue() {
+        System.out.println(value); // Ambiguity: Which 'value' to use?
+    }
+}
+```
+👉 **Compilation Error:** Java does not allow this because it leads to ambiguity.  
+If `Child` inherits from both `Parent1` and `Parent2`, and both define `value`, **Java wouldn't know which one to use.**
+
+---
+
+### **How Java Solves This: Using Interfaces**
+Java allows multiple inheritance only through **interfaces** because interfaces **do not store state (no instance variables).**  
+Example:
+```java
+interface Parent1 {
+    int value1 = 10; // Static and final by default
+}
+
+interface Parent2 {
+    int value2 = 20; // Static and final by default
+}
+
+class Child implements Parent1, Parent2 {
+    void printValues() {
+        System.out.println(Parent1.value1); // No ambiguity
+        System.out.println(Parent2.value2);
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Child obj = new Child();
+        obj.printValues();
+    }
+}
+```
+✔ **Works fine** because interfaces only define **constants (static & final variables),** avoiding ambiguity.
+
+---
+
+### **If You Really Need Shared Behavior? Use Composition**
+Instead of multiple inheritance, Java uses **composition** (Has-A relationship):
+```java
+class Parent1 {
+    int value = 10;
+}
+
+class Parent2 {
+    int value = 20;
+}
+
+class Child {
+    Parent1 p1 = new Parent1();
+    Parent2 p2 = new Parent2();
+
+    void printValues() {
+        System.out.println(p1.value); // Access Parent1's variable
+        System.out.println(p2.value); // Access Parent2's variable
+    }
+}
+```
+✔ This approach **avoids ambiguity** while still allowing reuse.
+
+---
+
+### **Key Takeaways**
+1. **Java does not support multiple inheritance with classes** to avoid ambiguity.
+2. **Multiple inheritance is allowed using interfaces** because they do not store instance variables.
+3. **Use composition** instead of multiple inheritance if you need shared behavior.
+
+Yes, in **method overriding**, the reference variable determines which methods can be accessed, but the **actual method execution depends on the object type** at runtime (dynamic method dispatch).
+
+### **Key Points:**
+1. **Reference type determines accessible members** → The reference variable's type dictates which methods and fields can be accessed at compile time.
+2. **Object type determines overridden method execution** → If a method is overridden, the method in the **actual object's class** executes at runtime, not the method in the reference class.
+
+### **Example:**
+```java
+class Parent {
+    void show() {
+        System.out.println("Parent's show()");
+    }
+}
+
+class Child extends Parent {
+    @Override
+    void show() {
+        System.out.println("Child's show()");
+    }
+}
+
+public class Test {
+    public static void main(String[] args) {
+        Parent obj = new Child(); // Reference of Parent, Object of Child
+        obj.show(); // Calls Child's show() due to dynamic method dispatch
+    }
+}
+```
+
+**Output:**
+```
+Child's show()
+```
+- Even though `obj` is of type `Parent`, the overridden `show()` method of `Child` is executed because **method overriding follows runtime polymorphism**.
+
+### **But for variables:**
+Instance variables **do not follow method overriding**. The reference type determines which variable is accessed.
+
+```java
+class Parent {
+    int value = 10;
+}
+
+class Child extends Parent {
+    int value = 20;
+}
+
+public class Test {
+    public static void main(String[] args) {
+        Parent obj = new Child();
+        System.out.println(obj.value); // Prints 10 (Parent's value)
+    }
+}
+```
+
+**Key Takeaway:**
+- **Methods follow runtime polymorphism (dynamic binding).**
+- **Variables are resolved at compile time (static binding).**
+Yes, **static methods do not follow method overriding** and are resolved at **compile-time** based on the reference type, not the object type. This is because static methods belong to the **class itself**, not the instance.
+
+### **Key Differences:**
+| Feature           | Instance Methods (Overridden) | Static Methods (Hidden) |
+|------------------|---------------------------------|-------------------------|
+| **Binding Time** | Runtime (Dynamic Binding)       | Compile-time (Static Binding) |
+| **Accessed by**  | Object reference                | Class name or reference |
+| **Execution**    | Based on the actual object type | Based on reference type |
+
+---
+
+### **Example: Static Methods Do Not Override**
+```java
+class Parent {
+    static void display() {
+        System.out.println("Parent's static display()");
+    }
+}
+
+class Child extends Parent {
+    static void display() {
+        System.out.println("Child's static display()");
+    }
+}
+
+public class Test {
+    public static void main(String[] args) {
+        Parent obj = new Child(); // Reference of Parent, Object of Child
+        obj.display(); // Calls Parent's display()
+    }
+}
+```
+
+**Output:**
+```
+Parent's static display()
+```
+
+- Here, **`display()` is a static method**, so method resolution is done at **compile-time** based on the reference type (`Parent`), not the object type (`Child`).
+- This is called **method hiding**, not overriding.
+
+---
+
+### **How Static Methods Differ from Instance Methods**
+```java
+class Parent {
+    void instanceMethod() { System.out.println("Parent's instance method"); }
+    static void staticMethod() { System.out.println("Parent's static method"); }
+}
+
+class Child extends Parent {
+    @Override
+    void instanceMethod() { System.out.println("Child's instance method"); }
+    static void staticMethod() { System.out.println("Child's static method"); }
+}
+
+public class Test {
+    public static void main(String[] args) {
+        Parent obj = new Child();
+
+        obj.instanceMethod(); // Runtime (Dynamic Binding) → Child's method executes
+        obj.staticMethod();   // Compile-time (Static Binding) → Parent's method executes
+    }
+}
+```
+
+**Output:**
+```
+Child's instance method
+Parent's static method
+```
+
+### **Key Takeaways:**
+1. **Instance methods are overridden** and resolved at **runtime** based on the object type.
+2. **Static methods are hidden** (not overridden) and resolved at **compile-time** based on the reference type.
+3. **Access static methods via class name** to avoid confusion:
+   ```java
+   Parent.staticMethod(); // Calls Parent's method
+   Child.staticMethod();  // Calls Child's method
+   ```
