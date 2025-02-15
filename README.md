@@ -668,3 +668,97 @@ Parent's static method
    Parent.staticMethod(); // Calls Parent's method
    Child.staticMethod();  // Calls Child's method
    ```
+In Java, **not everything** in an interface is `static` and `final`. However, there are strict rules for what is allowed inside an interface:
+
+### 🚀 **Rules of Java Interfaces**
+1. **Interface variables are `public`, `static`, and `final` by default.**  
+2. **Methods in interfaces are `public` and `abstract` by default (before Java 8).**  
+3. **From Java 8 onwards:**
+   - You can have **default methods** (with implementation).
+   - You can have **static methods** (with implementation).
+4. **From Java 9 onwards:**  
+   - You can have **private methods** inside interfaces.
+
+---
+
+### 🔥 **Why Are Interface Variables `static` and `final`?**
+#### ✅ **1. Variables in Interfaces Are Meant to Be Constants**
+- In an interface, all variables are automatically:
+  ```java
+  public static final
+  ```
+- This means:
+  - `public` → Accessible everywhere.
+  - `static` → Shared among all implementing classes.
+  - `final` → Cannot be changed (constant).
+
+🔹 Example:
+```java
+interface Config {
+    int MAX_USERS = 100;  // Same as: public static final int MAX_USERS = 100;
+}
+```
+Equivalent to:
+```java
+interface Config {
+    public static final int MAX_USERS = 100;
+}
+```
+✔ Since they are `static`, you can access them directly using the interface name:
+```java
+System.out.println(Config.MAX_USERS); // ✅ Works
+```
+
+#### ❌ Why Not Allow Non-Final Variables?
+If interface variables were **not `final`**, every implementing class could **modify them**, breaking consistency.
+
+---
+
+### 🔥 **Why Are Methods in Interfaces Not `static` and `final`?**
+1. **Methods are `abstract` by default** (before Java 8) → No implementation allowed.
+2. **Methods cannot be `final` in an interface** because an interface is meant to be implemented (overridden).
+
+---
+
+### 🎯 **Evolution of Interface Methods**
+#### ✅ **Before Java 8:**  
+- Only `abstract` methods allowed.
+```java
+interface Animal {
+    void makeSound(); // Implicitly public and abstract
+}
+```
+
+#### ✅ **Java 8 Introduced `default` and `static` Methods:**  
+```java
+interface Animal {
+    void makeSound(); // abstract
+
+    default void eat() { // ✅ Can have implementation
+        System.out.println("Eating...");
+    }
+
+    static void sleep() { // ✅ Static method with body
+        System.out.println("Sleeping...");
+    }
+}
+```
+
+#### ✅ **Java 9 Introduced `private` Methods:**
+```java
+interface Animal {
+    private void helper() { // ✅ Private method inside interface
+        System.out.println("Helper method");
+    }
+}
+```
+
+---
+
+### 🎯 **Conclusion**
+- ✅ **Variables in interfaces are `static` and `final` because they act as constants.**
+- ✅ **Methods are NOT `static` or `final` by default.** They are either:
+  - `abstract` (default before Java 8),
+  - `default` (with implementation from Java 8),
+  - `static` (from Java 8),
+  - `private` (from Java 9).
